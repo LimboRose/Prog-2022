@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameHandler : MonoBehaviour
 {
@@ -20,5 +21,9 @@ public class GameHandler : MonoBehaviour
     void Update()
     {
         soulsText.text = "Souls : " + souls;
+        if (souls == 10)
+        {
+            SceneManager.LoadScene(4);
+        }
     }
 }
