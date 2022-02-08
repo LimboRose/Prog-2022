@@ -6,9 +6,19 @@ public class thirdpersonscript : MonoBehaviour
 {
     public CharacterController controller;
     public Transform cam;
+    public Animator animator;
+
+    public float gravity = -9.81f;
+    public float jumpHeight = 3f;
+
+    public Transform groundCheck;
+    public float groundDistance = 0.4f;
+    public LayerMask groundMask;
+
+    public bool isGrounded;
+    Vector3 velocity;
 
     public float speed = 6f;
-
     public float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;
 
@@ -16,9 +26,18 @@ public class thirdpersonscript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        animator.SetBool("IsJumping", isGrounded);
+
+
+
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
+        animator.SetFloat("Speed", direction.magnitude);
+        velocity.y += gravity*Time.deltaTime;
+
+        controller.Move(velocity);
 
         if(direction.magnitude >= 0.1f)
         {
@@ -28,6 +47,17 @@ public class thirdpersonscript : MonoBehaviour
 
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             controller.Move(moveDir.normalized * speed * Time.deltaTime);
+        }
+
+        if (isGrounded && velocity.y < 0)
+        {
+            velocity.y = -0.1f;
+        }
+        
+        if (Input.GetButtonDown("Jump")&& isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            Debug.Log("jumped");
         }
     }
 }
